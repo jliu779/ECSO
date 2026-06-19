@@ -1,0 +1,4 @@
+# Optional Llama judge for safety benchmarks. Leave empty to use heuristics.
+judge_model_path: ""
+max_new_tokens: 64
+temperature: 0.0

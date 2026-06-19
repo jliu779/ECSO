@@ -25,6 +25,7 @@ dependencies = [
 [project.optional-dependencies]
 train = ["deepspeed==0.12.6", "ninja", "wandb"]
 build = ["build", "twine"]
+qwen_vl = ["qwen-vl-utils>=0.0.8"]
 
 [project.urls]
 "Homepage" = "https://llava-vl.github.io"
