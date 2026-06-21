@@ -24,8 +24,8 @@ declare -A MODEL_PATHS=(
 
     [qwen25vl]="/hub/huggingface/models/Qwen/Qwen2.5-VL-7B-Instruct"
     [qwen3vl]="/hub/huggingface/models/Qwen/Qwen3-VL-7B-Instruct"
-    [phi4]="/hub/huggingface/models/microsoft/phi-4-multimodal-instruct"
-    [glm41v]="/hub/huggingface/models/THUDM/glm-4v-9b"
+    [phi4]="/hub/huggingface/models/microsoft/Phi-4-multimodal-instruct"
+    [glm41v]="/hub/huggingface/models/zai-org/GLM-4.1V-9B-Thinking"
     [internvl3]="/hub/huggingface/models/OpenGVLab/InternVL3-8B"
 )
 
