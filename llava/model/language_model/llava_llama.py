@@ -30,6 +30,13 @@ from ..llava_arch import LlavaMetaModel, LlavaMetaForCausalLM
 class LlavaConfig(LlamaConfig):
     model_type = "llava_llama"
 
+    def get_text_config(self, decoder: bool = False) -> "LlavaConfig":
+        # LlavaLlamaForCausalLM IS the text model; newer transformers'
+        # resize_token_embeddings calls get_text_config() and expects a
+        # PretrainedConfig, but text_config in HF-format checkpoints is a
+        # plain dict. Return self to avoid 'dict has no attribute' errors.
+        return self
+
 
 class LlavaLlamaModel(LlavaMetaModel, LlamaModel):
     config_class = LlavaConfig
