@@ -42,6 +42,13 @@ class LlavaLlamaForCausalLM(LlamaForCausalLM, LlavaMetaForCausalLM):
     config_class = LlavaConfig
 
     def __init__(self, config):
+        # Newer transformers require decoder/encoder config attrs to have .to_dict();
+        # older model checkpoints store them as plain dicts — wrap them.
+        from transformers import PretrainedConfig
+        for attr in ("decoder", "encoder"):
+            val = getattr(config, attr, None)
+            if isinstance(val, dict):
+                setattr(config, attr, PretrainedConfig(**val))
         super(LlamaForCausalLM, self).__init__(config)
         self.model = LlavaLlamaModel(config)
         self.pretraining_tp = config.pretraining_tp
