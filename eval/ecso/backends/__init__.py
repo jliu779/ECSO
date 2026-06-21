@@ -7,7 +7,7 @@ from eval.ecso.backends.base import ECSOBackend
 SUPPORTED_VLMS = frozenset(
     {
         "llava15",
-        "llava_next",
+
         "qwen25vl",
         "qwen3vl",
         "phi4",
@@ -39,7 +39,7 @@ def get_backend(
             f"unsupported VLM '{vlm}'; supported: {', '.join(sorted(SUPPORTED_VLMS))}"
         )
 
-    if vlm in {"llava15", "llava_next"}:
+    if vlm in {"llava15"}:
         from eval.ecso.backends.llava import LlavaBackend
 
         return LlavaBackend(

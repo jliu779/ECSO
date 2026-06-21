@@ -21,7 +21,7 @@ mkdir -p "$ROOT/$OUT_DIR"
 # ---------------------------------------------------------------------------
 declare -A MODEL_PATHS=(
     [llava15]="/hub/huggingface/models/llava-hf/llava-1.5-7b-hf"
-    [llava_next]="/hub/huggingface/models/llava-hf/llava-v1.6-vicuna-7b-hf"
+
     [qwen25vl]="/hub/huggingface/models/Qwen/Qwen2.5-VL-7B-Instruct"
     [qwen3vl]="/hub/huggingface/models/Qwen/Qwen3-VL-7B-Instruct"
     [phi4]="/hub/huggingface/models/microsoft/phi-4-multimodal-instruct"
@@ -31,7 +31,7 @@ declare -A MODEL_PATHS=(
 
 declare -A CONV_MODES=(
     [llava15]="vicuna_v1"
-    [llava_next]="vicuna_v1"
+
     [qwen25vl]="qwen_vl"
     [qwen3vl]="qwen_vl"
     [phi4]="phi4"

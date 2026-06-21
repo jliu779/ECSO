@@ -10,8 +10,14 @@ QWEN_VLMS = frozenset({"qwen25vl", "qwen3vl"})
 
 def _resolve_model_cls(vlm: str):
     if vlm == "qwen25vl":
-        from transformers import Qwen2VLForConditionalGeneration
-
+        try:
+            from transformers import Qwen2VLForConditionalGeneration
+        except ImportError as exc:
+            raise ImportError(
+                "qwen25vl requires transformers>=4.48 with Qwen2VLForConditionalGeneration. "
+                "The LLaVA base pin (transformers==4.37.2) is too old; run: "
+                'pip install -U "transformers>=4.48.0" qwen-vl-utils'
+            ) from exc
         return Qwen2VLForConditionalGeneration, "qwen2"
     if vlm == "qwen3vl":
         try:

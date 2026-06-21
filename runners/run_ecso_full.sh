@@ -62,10 +62,10 @@ if [[ ! -f "$GENERATE_SCRIPT" ]]; then
 fi
 
 case "$VLM" in
-  llava15|llava_next|qwen25vl|qwen3vl|phi4|glm41v|internvl3)
+  llava15|qwen25vl|qwen3vl|phi4|glm41v|internvl3)
     ;;
   *)
-    echo "ERROR: unsupported VLM='$VLM' (supported: llava15 llava_next qwen25vl qwen3vl phi4 glm41v internvl3)" >&2
+    echo "ERROR: unsupported VLM='$VLM' (supported: llava15 qwen25vl qwen3vl phi4 glm41v internvl3)" >&2
     exit 1
     ;;
 esac

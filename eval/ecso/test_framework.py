@@ -95,7 +95,7 @@ def test_phi4_glm41v_prompts():
 def test_supported_vlms():
     for tag in (
         "llava15",
-        "llava_next",
+
         "qwen25vl",
         "qwen3vl",
         "phi4",

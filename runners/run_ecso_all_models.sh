@@ -14,7 +14,7 @@ log() { echo "[$(date +%T)] $*"; }
 
 declare -a JOBS=(
   "llava15:/hub/huggingface/models/llava-hf/llava-1.5-7b-hf"
-  "llava_next:/hub/huggingface/models/llava-hf/llava-v1.6-mistral-7b-hf"
+
   "qwen25vl:/hub/huggingface/models/Qwen/Qwen2.5-VL-7B-Instruct"
   "qwen3vl:/hub/huggingface/models/Qwen/Qwen3-VL-8B-Instruct"
   "phi4:/hub/huggingface/models/microsoft/Phi-4-multimodal-instruct"
