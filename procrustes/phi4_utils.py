@@ -9,39 +9,11 @@ See microsoft/Phi-4-multimodal-instruct model card (sample_inference_phi4mm.py).
 """
 from __future__ import annotations
 
-import contextlib
-import os
 from typing import Tuple
 
 import torch
 from PIL import Image
 
-
-@contextlib.contextmanager
-def _hub_offline():
-    """Patch huggingface_hub.validate_repo_id to allow absolute local paths.
-
-    Newer huggingface_hub calls validate_repo_id inside try_to_load_from_cache,
-    rejecting absolute local paths like /hub/.../model with HFValidationError.
-    Patching the module-level function is the only reliable workaround because
-    HF_HUB_OFFLINE=1 does not suppress the validation step.
-    """
-    try:
-        from huggingface_hub.utils import _validators as _hf_val
-        _orig = _hf_val.validate_repo_id
-
-        def _patched(repo_id, **kwargs):
-            if os.path.isabs(str(repo_id)):
-                return  # skip validation for absolute local paths
-            return _orig(repo_id, **kwargs)
-
-        _hf_val.validate_repo_id = _patched
-        try:
-            yield
-        finally:
-            _hf_val.validate_repo_id = _orig
-    except (ImportError, AttributeError):
-        yield
 
 _USER = "<|user|>"
 _ASSISTANT = "<|assistant|>"
@@ -194,6 +166,26 @@ def _preload_and_patch_phi4_remote(model_path: str) -> None:
         )
 
 
+def _load_phi4_processor(model_path: str):
+    """Load Phi4MMProcessor by resolving the class directly from the local model dir.
+
+    AutoProcessor.from_pretrained fails with HFValidationError when
+    processor_config.json is absent: it falls back to the HF hub and validates
+    the absolute local path as a repo_id. By loading the processor class via
+    get_class_from_dynamic_module (which reads the local .py file) and calling
+    from_pretrained on that concrete class, we skip the AutoProcessor registry
+    lookup entirely and never trigger the hub validation path.
+    """
+    from transformers import AutoConfig
+    from transformers.dynamic_module_utils import get_class_from_dynamic_module
+
+    config = AutoConfig.from_pretrained(model_path, trust_remote_code=True, local_files_only=True)
+    auto_map = getattr(config, "auto_map", None) or {}
+    proc_ref = auto_map.get("AutoProcessor", "processing_phi4mm.Phi4MMProcessor")
+    proc_cls = get_class_from_dynamic_module(proc_ref, model_path)
+    return proc_cls.from_pretrained(model_path, trust_remote_code=True, local_files_only=True)
+
+
 def _load_phi4_remote(
     model_path: str,
     dtype,
@@ -202,8 +194,7 @@ def _load_phi4_remote(
 ):
     from transformers import AutoModelForCausalLM
 
-    with _hub_offline():
-        _preload_and_patch_phi4_remote(model_path)
+    _preload_and_patch_phi4_remote(model_path)
     return _load_pretrained(
         AutoModelForCausalLM,
         model_path,
@@ -231,12 +222,10 @@ def load_phi4(
     Defaults to eager attention (no flash-attn requirement). Set
     attn_implementation="flash_attention_2" on Ampere+ if flash-attn is installed.
     """
-    from transformers import AutoConfig, AutoProcessor
-
     ensure_phi4_transformers_compat()
-    with _hub_offline():
-        processor = AutoProcessor.from_pretrained(model_path, trust_remote_code=True)
-        config = AutoConfig.from_pretrained(model_path, trust_remote_code=True)
+    processor = _load_phi4_processor(model_path)
+    from transformers import AutoConfig
+    config = AutoConfig.from_pretrained(model_path, trust_remote_code=True, local_files_only=True)
     model_type = getattr(config, "model_type", "")
 
     # Only HF repos published as phi4_multimodal can use the in-tree class.
