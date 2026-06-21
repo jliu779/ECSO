@@ -19,21 +19,29 @@ from PIL import Image
 
 @contextlib.contextmanager
 def _hub_offline():
-    """Temporarily set HF_HUB_OFFLINE=1 to prevent hub validation of local paths.
+    """Patch huggingface_hub.validate_repo_id to allow absolute local paths.
 
-    Newer huggingface_hub validates paths passed to try_to_load_from_cache as
-    repo IDs even when the path is a local directory, causing HFValidationError.
-    Remote code for phi4mm is already cached in ~/.cache so offline mode is safe.
+    Newer huggingface_hub calls validate_repo_id inside try_to_load_from_cache,
+    rejecting absolute local paths like /hub/.../model with HFValidationError.
+    Patching the module-level function is the only reliable workaround because
+    HF_HUB_OFFLINE=1 does not suppress the validation step.
     """
-    prev = os.environ.get("HF_HUB_OFFLINE")
-    os.environ["HF_HUB_OFFLINE"] = "1"
     try:
+        from huggingface_hub.utils import _validators as _hf_val
+        _orig = _hf_val.validate_repo_id
+
+        def _patched(repo_id, **kwargs):
+            if os.path.isabs(str(repo_id)):
+                return  # skip validation for absolute local paths
+            return _orig(repo_id, **kwargs)
+
+        _hf_val.validate_repo_id = _patched
+        try:
+            yield
+        finally:
+            _hf_val.validate_repo_id = _orig
+    except (ImportError, AttributeError):
         yield
-    finally:
-        if prev is None:
-            os.environ.pop("HF_HUB_OFFLINE", None)
-        else:
-            os.environ["HF_HUB_OFFLINE"] = prev
 
 _USER = "<|user|>"
 _ASSISTANT = "<|assistant|>"
