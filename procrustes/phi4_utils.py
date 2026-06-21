@@ -45,6 +45,7 @@ def _load_pretrained(model_cls, model_path: str, dtype, device_map: str, attn_im
     kwargs = dict(
         device_map=device_map,
         attn_implementation=attn_implementation,
+        local_files_only=True,
         **_from_pretrained_dtype_kwargs(dtype),
         **extra,
     )
@@ -139,7 +140,7 @@ def _preload_and_patch_phi4_remote(model_path: str) -> None:
     from transformers import AutoConfig
     from transformers.dynamic_module_utils import get_class_from_dynamic_module
 
-    config = AutoConfig.from_pretrained(model_path, trust_remote_code=True)
+    config = AutoConfig.from_pretrained(model_path, trust_remote_code=True, local_files_only=True)
     auto_map = getattr(config, "auto_map", None) or {}
     class_ref = auto_map.get("AutoModelForCausalLM", "modeling_phi4mm.Phi4MMForCausalLM")
     causal_cls = get_class_from_dynamic_module(class_ref, model_path)
@@ -203,8 +204,8 @@ def load_phi4(
     from transformers import AutoConfig, AutoProcessor
 
     ensure_phi4_transformers_compat()
-    processor = AutoProcessor.from_pretrained(model_path, trust_remote_code=True)
-    config = AutoConfig.from_pretrained(model_path, trust_remote_code=True)
+    processor = AutoProcessor.from_pretrained(model_path, trust_remote_code=True, local_files_only=True)
+    config = AutoConfig.from_pretrained(model_path, trust_remote_code=True, local_files_only=True)
     model_type = getattr(config, "model_type", "")
 
     # Only HF repos published as phi4_multimodal can use the in-tree class.

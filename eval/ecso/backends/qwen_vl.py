@@ -11,14 +11,16 @@ QWEN_VLMS = frozenset({"qwen25vl", "qwen3vl"})
 def _resolve_model_cls(vlm: str):
     if vlm == "qwen25vl":
         try:
-            from transformers import Qwen2VLForConditionalGeneration
-        except ImportError as exc:
-            raise ImportError(
-                "qwen25vl requires transformers>=4.48 with Qwen2VLForConditionalGeneration. "
-                "The LLaVA base pin (transformers==4.37.2) is too old; run: "
-                'pip install -U "transformers>=4.48.0" qwen-vl-utils'
-            ) from exc
-        return Qwen2VLForConditionalGeneration, "qwen2"
+            from transformers import Qwen2_5_VLForConditionalGeneration
+        except ImportError:
+            try:
+                from transformers import Qwen2VLForConditionalGeneration as Qwen2_5_VLForConditionalGeneration
+            except ImportError as exc:
+                raise ImportError(
+                    "qwen25vl requires transformers>=4.52 with Qwen2_5_VLForConditionalGeneration. "
+                    'Run: pip install -U "transformers>=4.52.0" qwen-vl-utils'
+                ) from exc
+        return Qwen2_5_VLForConditionalGeneration, "qwen2"
     if vlm == "qwen3vl":
         try:
             from transformers import Qwen3VLForConditionalGeneration
@@ -49,12 +51,15 @@ class QwenVLBackend:
         model_cls, self._variant = _resolve_model_cls(self.vlm)
         path = str(Path(self.model_path).expanduser())
 
-        self.processor = AutoProcessor.from_pretrained(path, trust_remote_code=True)
+        self.processor = AutoProcessor.from_pretrained(
+            path, trust_remote_code=True, local_files_only=True
+        )
         self.model = model_cls.from_pretrained(
             path,
             torch_dtype=self.torch_dtype,
             device_map="auto",
             trust_remote_code=True,
+            local_files_only=True,
         ).eval()
 
     @property

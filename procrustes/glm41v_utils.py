@@ -39,12 +39,13 @@ def load_glm41v(
     """Load GLM-4.1V-9B-Thinking via Glm4vForConditionalGeneration + AutoProcessor."""
     from transformers import AutoProcessor, Glm4vForConditionalGeneration
 
-    processor = AutoProcessor.from_pretrained(model_path, use_fast=True)
+    processor = AutoProcessor.from_pretrained(model_path, use_fast=True, local_files_only=True)
     model = Glm4vForConditionalGeneration.from_pretrained(
         model_path,
         torch_dtype=dtype,
         device_map=device_map,
         attn_implementation=attn_implementation,
+        local_files_only=True,
     ).eval()
     return model, processor
 

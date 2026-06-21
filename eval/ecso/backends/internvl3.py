@@ -4,8 +4,6 @@ from dataclasses import dataclass
 from pathlib import Path
 
 import torch
-from transformers import GenerationConfig
-
 from procrustes.internvl3_utils import build_internvl3_question, load_internvl3
 from procrustes.internvl_utils import load_image_pixel_values
 
@@ -32,14 +30,14 @@ class InternVL3Backend:
     def device(self) -> torch.device:
         return next(self.model.parameters()).device
 
-    def _generation_config(self, max_new_tokens: int) -> GenerationConfig:
+    def _generation_config(self, max_new_tokens: int) -> dict:
+        # InternVL3 remote chat() expects a plain dict, not a GenerationConfig object.
+        cfg: dict = {"max_new_tokens": max_new_tokens}
         if self.temperature > 0:
-            return GenerationConfig(
-                max_new_tokens=max_new_tokens,
-                do_sample=True,
-                temperature=self.temperature,
-            )
-        return GenerationConfig(max_new_tokens=max_new_tokens, do_sample=False)
+            cfg.update(do_sample=True, temperature=self.temperature)
+        else:
+            cfg["do_sample"] = False
+        return cfg
 
     def generate(
         self,
