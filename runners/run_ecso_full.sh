@@ -22,9 +22,20 @@ CUDA_VISIBLE_DEVICES="${CUDA_VISIBLE_DEVICES:-0}"
 JUDGE_GPU="${JUDGE_GPU:-1}"
 DUAL_GPU="${DUAL_GPU:-1}"
 VENV="${VENV:-python3}"
-MODEL_PATH="${MODEL_PATH:-}"
 MODEL_BASE="${MODEL_BASE:-}"
 CONV_MODE="${CONV_MODE:-vicuna_v1}"
+
+# Default model paths — override with MODEL_PATH=... if needed
+if [[ -z "${MODEL_PATH:-}" ]]; then
+  case "$VLM" in
+    llava15)    MODEL_PATH="/hub/huggingface/models/llava-hf/llava-1.5-7b-hf" ;;
+    qwen25vl)   MODEL_PATH="/hub/huggingface/models/Qwen/Qwen2.5-VL-7B-Instruct" ;;
+    qwen3vl)    MODEL_PATH="/hub/huggingface/models/Qwen/Qwen3-VL-8B-Instruct" ;;
+    phi4)       MODEL_PATH="/hub/huggingface/models/microsoft/Phi-4-multimodal-instruct" ;;
+    glm41v)     MODEL_PATH="/hub/huggingface/models/zai-org/GLM-4.1V-9B-Thinking" ;;
+    internvl3)  MODEL_PATH="/hub/huggingface/models/OpenGVLab/InternVL3-8B" ;;
+  esac
+fi
 JUDGE_CFG="${JUDGE_CFG:-}"
 LIMIT="${LIMIT:-}"
 SKIP_GEN="${SKIP_GEN:-0}"
