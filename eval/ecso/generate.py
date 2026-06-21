@@ -29,7 +29,7 @@ def main() -> None:
     backend = get_backend(
         args.vlm,
         args.model_path,
-        model_base=args.model_base,
+        model_base=args.model_base or None,
         conv_mode=args.conv_mode,
         temperature=args.temperature,
         attn_implementation=args.attn_implementation,
