@@ -9,31 +9,10 @@ See microsoft/Phi-4-multimodal-instruct model card (sample_inference_phi4mm.py).
 """
 from __future__ import annotations
 
-import contextlib
-import os
 from typing import Tuple
 
 import torch
 from PIL import Image
-
-
-@contextlib.contextmanager
-def _hub_offline():
-    """Temporarily set HF_HUB_OFFLINE=1 to prevent hub validation of local paths.
-
-    Newer huggingface_hub validates paths passed to try_to_load_from_cache as
-    repo IDs even when the path is a local directory, causing HFValidationError.
-    Remote code for phi4mm is already cached in ~/.cache so offline mode is safe.
-    """
-    prev = os.environ.get("HF_HUB_OFFLINE")
-    os.environ["HF_HUB_OFFLINE"] = "1"
-    try:
-        yield
-    finally:
-        if prev is None:
-            os.environ.pop("HF_HUB_OFFLINE", None)
-        else:
-            os.environ["HF_HUB_OFFLINE"] = prev
 
 _USER = "<|user|>"
 _ASSISTANT = "<|assistant|>"
@@ -194,8 +173,7 @@ def _load_phi4_remote(
 ):
     from transformers import AutoModelForCausalLM
 
-    with _hub_offline():
-        _preload_and_patch_phi4_remote(model_path)
+    _preload_and_patch_phi4_remote(model_path)
     return _load_pretrained(
         AutoModelForCausalLM,
         model_path,
@@ -226,9 +204,8 @@ def load_phi4(
     from transformers import AutoConfig, AutoProcessor
 
     ensure_phi4_transformers_compat()
-    with _hub_offline():
-        processor = AutoProcessor.from_pretrained(model_path, trust_remote_code=True)
-        config = AutoConfig.from_pretrained(model_path, trust_remote_code=True)
+    processor = AutoProcessor.from_pretrained(model_path, trust_remote_code=True, local_files_only=True)
+    config = AutoConfig.from_pretrained(model_path, trust_remote_code=True, local_files_only=True)
     model_type = getattr(config, "model_type", "")
 
     # Only HF repos published as phi4_multimodal can use the in-tree class.
