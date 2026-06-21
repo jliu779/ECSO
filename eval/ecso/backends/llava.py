@@ -65,7 +65,7 @@ class _HFLlavaBackend:
             inputs = self.processor(text=prompt, return_tensors="pt")
         inputs = {k: v.to(self.device) if hasattr(v, "to") else v for k, v in inputs.items()}
 
-        gen_kwargs: dict = {"max_new_tokens": max_new_tokens}
+        gen_kwargs: dict = {"max_new_tokens": max_new_tokens, "repetition_penalty": 1.1}
         if self.temperature > 0:
             gen_kwargs.update(do_sample=True, temperature=self.temperature)
         else:
