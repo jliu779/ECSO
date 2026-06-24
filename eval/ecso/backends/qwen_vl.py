@@ -41,6 +41,11 @@ class QwenVLBackend:
     model_path: str
     temperature: float = 0.0
     torch_dtype: torch.dtype = torch.bfloat16
+    # Cap image resolution to ~1280 tiles (28x28 each). Without this Qwen3-VL
+    # defaults to a very high tile count and processes each image ~3x per ECSO
+    # sample, making inference extremely slow.
+    max_pixels: int = 1280 * 28 * 28
+    min_pixels: int = 256 * 28 * 28
 
     def __post_init__(self) -> None:
         if self.vlm not in QWEN_VLMS:
@@ -52,7 +57,11 @@ class QwenVLBackend:
         path = str(Path(self.model_path).expanduser())
 
         self.processor = AutoProcessor.from_pretrained(
-            path, trust_remote_code=True, local_files_only=True
+            path,
+            trust_remote_code=True,
+            local_files_only=True,
+            min_pixels=self.min_pixels,
+            max_pixels=self.max_pixels,
         )
         self.model = model_cls.from_pretrained(
             path,
