@@ -1,0 +1,38 @@
+Traceback (most recent call last):
+  File "/home/jingliu/miniconda3/envs/venv_neurostrike/lib/python3.10/site-packages/transformers/utils/hub.py", line 479, in cached_files
+    hf_hub_download(
+  File "/home/jingliu/miniconda3/envs/venv_neurostrike/lib/python3.10/site-packages/huggingface_hub/utils/_validators.py", line 106, in _inner_fn
+    validate_repo_id(arg_value)
+  File "/home/jingliu/miniconda3/envs/venv_neurostrike/lib/python3.10/site-packages/huggingface_hub/utils/_validators.py", line 154, in validate_repo_id
+    raise HFValidationError(
+huggingface_hub.errors.HFValidationError: Repo id must be in the form 'repo_name' or 'namespace/repo_name': '/hub/huggingface/models/THUDM/glm-4v-9b'. Use `repo_type` argument if needed.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/jingliu/workspece/ECSO/eval/ecso/generate.py", line 49, in <module>
+    main()
+  File "/home/jingliu/workspece/ECSO/eval/ecso/generate.py", line 29, in main
+    backend = get_backend(
+  File "/home/jingliu/workspece/ECSO/eval/ecso/backends/__init__.py", line 74, in get_backend
+    return Glm41vBackend(
+  File "<string>", line 7, in __init__
+  File "/home/jingliu/workspece/ECSO/eval/ecso/backends/glm41v.py", line 22, in __post_init__
+    self.model, self.processor = load_glm41v(
+  File "/home/jingliu/workspece/ECSO/procrustes/glm41v_utils.py", line 42, in load_glm41v
+    processor = AutoProcessor.from_pretrained(model_path, use_fast=True, local_files_only=True)
+  File "/home/jingliu/miniconda3/envs/venv_neurostrike/lib/python3.10/site-packages/transformers/models/auto/processing_auto.py", line 303, in from_pretrained
+    processor_config_file = cached_file(pretrained_model_name_or_path, PROCESSOR_NAME, **cached_file_kwargs)
+  File "/home/jingliu/miniconda3/envs/venv_neurostrike/lib/python3.10/site-packages/transformers/utils/hub.py", line 322, in cached_file
+    file = cached_files(path_or_repo_id=path_or_repo_id, filenames=[filename], **kwargs)
+  File "/home/jingliu/miniconda3/envs/venv_neurostrike/lib/python3.10/site-packages/transformers/utils/hub.py", line 531, in cached_files
+    resolved_files = [
+  File "/home/jingliu/miniconda3/envs/venv_neurostrike/lib/python3.10/site-packages/transformers/utils/hub.py", line 532, in <listcomp>
+    _get_cache_file_to_return(path_or_repo_id, filename, cache_dir, revision, repo_type)
+  File "/home/jingliu/miniconda3/envs/venv_neurostrike/lib/python3.10/site-packages/transformers/utils/hub.py", line 143, in _get_cache_file_to_return
+    resolved_file = try_to_load_from_cache(
+  File "/home/jingliu/miniconda3/envs/venv_neurostrike/lib/python3.10/site-packages/huggingface_hub/utils/_validators.py", line 106, in _inner_fn
+    validate_repo_id(arg_value)
+  File "/home/jingliu/miniconda3/envs/venv_neurostrike/lib/python3.10/site-packages/huggingface_hub/utils/_validators.py", line 154, in validate_repo_id
+    raise HFValidationError(
+huggingface_hub.errors.HFValidationError: Repo id must be in the form 'repo_name' or 'namespace/repo_name': '/hub/huggingface/models/THUDM/glm-4v-9b'. Use `repo_type` argument if needed.

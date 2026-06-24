@@ -1,0 +1,4 @@
+`torch_dtype` is deprecated! Use `dtype` instead!
+Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]Loading checkpoint shards:  25%|██▌       | 1/4 [00:47<02:23, 47.72s/it]Loading checkpoint shards:  50%|█████     | 2/4 [01:36<01:36, 48.21s/it]Loading checkpoint shards:  75%|███████▌  | 3/4 [02:23<00:47, 47.64s/it]Loading checkpoint shards: 100%|██████████| 4/4 [03:04<00:00, 45.17s/it]Loading checkpoint shards: 100%|██████████| 4/4 [03:04<00:00, 46.15s/it]
+ecso:   0%|          | 0/1 [00:00<?, ?it/s]The following generation flags are not valid and may be ignored: ['temperature', 'top_p', 'top_k']. Set `TRANSFORMERS_VERBOSITY=info` for more details.
+ecso: 100%|██████████| 1/1 [08:35<00:00, 515.63s/it]ecso: 100%|██████████| 1/1 [08:35<00:00, 515.63s/it]
