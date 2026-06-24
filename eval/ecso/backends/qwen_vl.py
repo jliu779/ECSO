@@ -77,8 +77,20 @@ class QwenVLBackend:
 
     def _prepare_inputs(self, messages: list[dict]) -> dict:
         if self._variant == "qwen3":
+            # transformers' load_image does not support file:// URIs; strip the
+            # scheme so it receives a plain absolute path it can open directly.
+            msgs_for_qwen3 = []
+            for msg in messages:
+                fixed = []
+                for part in msg.get("content") or []:
+                    if isinstance(part, dict) and part.get("type") == "image":
+                        img = part["image"]
+                        if isinstance(img, str) and img.startswith("file://"):
+                            part = {**part, "image": img[7:]}
+                    fixed.append(part)
+                msgs_for_qwen3.append({**msg, "content": fixed})
             inputs = self.processor.apply_chat_template(
-                messages,
+                msgs_for_qwen3,
                 tokenize=True,
                 add_generation_prompt=True,
                 return_dict=True,
