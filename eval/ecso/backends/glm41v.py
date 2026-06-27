@@ -36,14 +36,33 @@ class Glm41vBackend:
         return next(self.model.parameters()).device
 
     def _resize_image_if_needed(self, image_path: str) -> tuple[str, bool]:
-        """Return (path_to_use, created_tmp). Resize large images to _MAX_PIXELS."""
+        """Return (path_to_use, created_tmp).
+
+        GLM-4V smart_resize requires both dimensions >= 28 (patch factor) and
+        rejects images exceeding _MAX_PIXELS. Handle both bounds here.
+        """
         from PIL import Image as PilImage
+        _PATCH = 28
         img = PilImage.open(image_path).convert("RGB")
         w, h = img.size
-        if w * h <= _MAX_PIXELS:
+
+        # Scale down if too large
+        if w * h > _MAX_PIXELS:
+            scale = (_MAX_PIXELS / (w * h)) ** 0.5
+            w, h = max(int(w * scale), _PATCH), max(int(h * scale), _PATCH)
+
+        # Scale up if either dimension is below the minimum patch size
+        if w < _PATCH:
+            h = max(int(h * _PATCH / w), _PATCH)
+            w = _PATCH
+        if h < _PATCH:
+            w = max(int(w * _PATCH / h), _PATCH)
+            h = _PATCH
+
+        if (w, h) == img.size:
             return image_path, False
-        scale = (_MAX_PIXELS / (w * h)) ** 0.5
-        img = img.resize((int(w * scale), int(h * scale)), PilImage.LANCZOS)
+
+        img = img.resize((w, h), PilImage.LANCZOS)
         fd, tmp = tempfile.mkstemp(suffix=".jpg")
         os.close(fd)
         img.save(tmp, "JPEG")
