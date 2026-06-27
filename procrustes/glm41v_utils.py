@@ -35,11 +35,19 @@ def load_glm41v(
     dtype=torch.bfloat16,
     device_map: str = "auto",
     attn_implementation: str = "eager",
+    max_pixels: int = 1280 * 28 * 28,
+    min_pixels: int = 256 * 28 * 28,
 ):
     """Load GLM-4.1V-9B-Thinking via Glm4vForConditionalGeneration + AutoProcessor."""
     from transformers import AutoProcessor, Glm4vForConditionalGeneration
 
-    processor = AutoProcessor.from_pretrained(model_path, use_fast=True, local_files_only=True)
+    processor = AutoProcessor.from_pretrained(
+        model_path,
+        use_fast=True,
+        local_files_only=True,
+        min_pixels=min_pixels,
+        max_pixels=max_pixels,
+    )
     model = Glm4vForConditionalGeneration.from_pretrained(
         model_path,
         torch_dtype=dtype,
