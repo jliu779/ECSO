@@ -1,11 +1,17 @@
 from __future__ import annotations
 
+import os
+import tempfile
 from dataclasses import dataclass
 from pathlib import Path
 
 import torch
 
 from procrustes.glm41v_utils import build_glm41v_messages, load_glm41v
+
+# Cap at ~1M pixels to prevent vision encoder OOM on high-res images.
+# Glm4vProcessor silently ignores max_pixels kwarg, so we resize with PIL.
+_MAX_PIXELS = 1280 * 28 * 28
 
 
 @dataclass
@@ -29,16 +35,37 @@ class Glm41vBackend:
     def device(self) -> torch.device:
         return next(self.model.parameters()).device
 
+    def _resize_image_if_needed(self, image_path: str) -> tuple[str, bool]:
+        """Return (path_to_use, created_tmp). Resize large images to _MAX_PIXELS."""
+        from PIL import Image as PilImage
+        img = PilImage.open(image_path).convert("RGB")
+        w, h = img.size
+        if w * h <= _MAX_PIXELS:
+            return image_path, False
+        scale = (_MAX_PIXELS / (w * h)) ** 0.5
+        img = img.resize((int(w * scale), int(h * scale)), PilImage.LANCZOS)
+        fd, tmp = tempfile.mkstemp(suffix=".jpg")
+        os.close(fd)
+        img.save(tmp, "JPEG")
+        return tmp, True
+
     def _prepare_inputs(self, query: str, image_path: str | None) -> dict:
         resolved = str(Path(image_path).expanduser().resolve()) if image_path else None
-        messages = build_glm41v_messages(query, resolved)
-        inputs = self.processor.apply_chat_template(
-            messages,
-            tokenize=True,
-            add_generation_prompt=True,
-            return_dict=True,
-            return_tensors="pt",
-        )
+        tmp_created = False
+        if resolved:
+            resolved, tmp_created = self._resize_image_if_needed(resolved)
+        try:
+            messages = build_glm41v_messages(query, resolved)
+            inputs = self.processor.apply_chat_template(
+                messages,
+                tokenize=True,
+                add_generation_prompt=True,
+                return_dict=True,
+                return_tensors="pt",
+            )
+        finally:
+            if tmp_created and resolved and os.path.exists(resolved):
+                os.unlink(resolved)
         if isinstance(inputs, dict):
             inputs.pop("token_type_ids", None)
             return {
