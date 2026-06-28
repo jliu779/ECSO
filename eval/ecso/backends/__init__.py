@@ -13,6 +13,7 @@ SUPPORTED_VLMS = frozenset(
         "phi4",
         "glm41v",
         "internvl3",
+        "internvl35",
     }
 )
 
@@ -77,7 +78,7 @@ def get_backend(
             attn_implementation=attn_implementation,
         )
 
-    if vlm == "internvl3":
+    if vlm in {"internvl3", "internvl35"}:
         from eval.ecso.backends.internvl3 import InternVL3Backend
 
         return InternVL3Backend(

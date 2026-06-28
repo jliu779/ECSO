@@ -34,6 +34,7 @@ if [[ -z "${MODEL_PATH:-}" ]]; then
     phi4)       MODEL_PATH="/hub/huggingface/models/microsoft/Phi-4-multimodal-instruct" ;;
     glm41v)     MODEL_PATH="/hub/huggingface/models/zai-org/GLM-4.1V-9B-Thinking" ;;
     internvl3)  MODEL_PATH="/hub/huggingface/models/OpenGVLab/InternVL3-8B" ;;
+    internvl35) MODEL_PATH="/hub/huggingface/models/OpenGVLab/InternVL3_5-8B" ;;
   esac
 fi
 JUDGE_CFG="${JUDGE_CFG:-}"
@@ -73,7 +74,7 @@ if [[ ! -f "$GENERATE_SCRIPT" ]]; then
 fi
 
 case "$VLM" in
-  llava15|qwen25vl|qwen3vl|phi4|glm41v|internvl3)
+  llava15|qwen25vl|qwen3vl|phi4|glm41v|internvl3|internvl35)
     ;;
   *)
     echo "ERROR: unsupported VLM='$VLM' (supported: llava15 qwen25vl qwen3vl phi4 glm41v internvl3)" >&2

@@ -27,6 +27,7 @@ declare -A MODEL_PATHS=(
     [phi4]="/hub/huggingface/models/microsoft/Phi-4-multimodal-instruct"
     [glm41v]="/hub/huggingface/models/zai-org/GLM-4.1V-9B-Thinking"
     [internvl3]="/hub/huggingface/models/OpenGVLab/InternVL3-8B"
+    [internvl35]="/hub/huggingface/models/OpenGVLab/InternVL3_5-8B"
 )
 
 declare -A CONV_MODES=(
@@ -37,6 +38,7 @@ declare -A CONV_MODES=(
     [phi4]="phi4"
     [glm41v]="glm4"
     [internvl3]="internvl"
+    [internvl35]="internvl"
 )
 
 # ---------------------------------------------------------------------------
