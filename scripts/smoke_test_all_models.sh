@@ -47,7 +47,13 @@ PASS=()
 FAIL=()
 declare -A FAIL_MSGS
 
+# Allow VLM=xxx to run only one model
+FILTER_VLM="${VLM:-}"
+
 for VLM in "${!MODEL_PATHS[@]}"; do
+    if [[ -n "$FILTER_VLM" && "$VLM" != "$FILTER_VLM" ]]; then
+        continue
+    fi
     MODEL_PATH="${MODEL_PATHS[$VLM]}"
     CONV_MODE="${CONV_MODES[$VLM]:-vicuna_v1}"
     OUT="$ROOT/$OUT_DIR/smoke_${VLM}.jsonl"
