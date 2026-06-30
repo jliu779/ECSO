@@ -8,7 +8,8 @@ import json
 
 
 def load_judge_config(path: str | Path) -> dict[str, Any]:
-    text = Path(path).read_text(encoding="utf-8")
+    path = Path(path)
+    text = path.read_text(encoding="utf-8")
     if path.suffix in {".yaml", ".yml"}:
         try:
             import yaml  # type: ignore
