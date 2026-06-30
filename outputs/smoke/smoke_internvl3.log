@@ -1,5 +1,0 @@
-`torch_dtype` is deprecated! Use `dtype` instead!
-Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]Loading checkpoint shards:  25%|██▌       | 1/4 [00:44<02:12, 44.20s/it]Loading checkpoint shards:  50%|█████     | 2/4 [01:27<01:27, 43.85s/it]Loading checkpoint shards:  75%|███████▌  | 3/4 [02:14<00:45, 45.23s/it]Loading checkpoint shards: 100%|██████████| 4/4 [02:26<00:00, 32.19s/it]Loading checkpoint shards: 100%|██████████| 4/4 [02:26<00:00, 36.72s/it]
-ecso:   0%|          | 0/1 [00:00<?, ?it/s]Setting `pad_token_id` to `eos_token_id`:151645 for open-end generation.
-Setting `pad_token_id` to `eos_token_id`:151645 for open-end generation.
-ecso: 100%|██████████| 1/1 [00:04<00:00,  4.26s/it]ecso: 100%|██████████| 1/1 [00:04<00:00,  4.26s/it]
