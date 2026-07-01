@@ -5,7 +5,7 @@
 - **mmstar**: 0.4253
 - **mme_realworld**: 0.5102
 - **mathvista**: 0.6220
-- **colorbench**: n/a
+- **colorbench**: 0.6063
 
 ## Safety
 - **vlsafe_examine_eval** (actionable unsafe rate): 0.0369
